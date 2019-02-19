@@ -38,7 +38,8 @@ const uploadImageToCustomVision = async(imageBuffer, mimetype) => {
 
     try {
         const res = await request(options);
-        console.log(`API result: ${res}`);
+        console.log("Get response from CustomView API.");
+        // console.log(`Response: ${res}`);
         const result = JSON.parse(res);
         result.created = new Date(result.created);
         result.mimetype = mimetype;
