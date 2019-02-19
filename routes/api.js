@@ -52,7 +52,7 @@ const uploadImageToCustomVision = async(imageBuffer, mimetype) => {
         // Store result to database
         await ResultModel.create(result);
         console.log("Result saved.");
-    } catch (error) {
+    } catch (err) {
         console.error(err)
     }
 }
