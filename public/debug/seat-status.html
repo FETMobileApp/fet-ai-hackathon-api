@@ -32,6 +32,8 @@
   </div>
   <div class="row">
     <button id="btnRefresh" class="btn btn-warning">Refresh</button>
+    <button id="btnAutoRefresh" class="btn btn-info active" data-toggle="button" aria-pressed="true" autocomplete="off">Auto-Refresh: On</button>
+    <button class="btn btn-secondary" disabled>Refresh after <span id="countdown">10sec.</span></button>
   </div>
   <div id="prediction" class="row alert alert-primary" role="alert">Prediction: 0%</div>
   <div class="row">
@@ -44,6 +46,12 @@
 
 <script>
 $(function() {
+  let isAutoRefresh = true;
+  let refreshInterval = null;
+  let countdownInterval = null;
+
+  let countdownNum = 10;
+
   const setRrediction = (prediction) =>{
     $("#prediction").text(`Rrediction: ${prediction}%`);
   }
@@ -76,11 +84,62 @@ $(function() {
     getImage();
   }
 
+  const doCountdown = () => {
+    if (countdownNum > 0) {
+      console.log("countdown:" + countdownNum);
+      $("#countdown").text(countdownNum + "sec.");
+      countdownNum--;
+    }
+  }
+
+  const setRefreshInterval = () => {
+    refreshInterval = setInterval(() => {
+      console.log("Refresh result date.");
+      loadInfo();
+      countdownNum = 10;
+      $("#countdown").text(countdownNum + "sec.");
+    }, 10000); // 10 sec.
+    countdownInterval = setInterval(() => {
+      doCountdown();
+    }, 1000); // 1sec.
+  }
+
+  const clearRefreshInterval = () => {
+    clearInterval(refreshInterval);
+    clearInterval(countdownInterval);
+    $("#countdown").text("N/A");
+  }
+
+  const switchAutoRefresh = (needAutoRefresh) => {
+    isAutoRefresh = needAutoRefresh;
+    if (isAutoRefresh) {
+      $("#btnAutoRefresh").text("Auto-Refresh: On");
+      $("#btnAutoRefresh").removeClass("btn-secondary");
+      $("#btnAutoRefresh").addClass("btn-info");
+      setRefreshInterval();
+    } else {
+      $("#btnAutoRefresh").text("Auto-Refresh: Off");
+      $("#btnAutoRefresh").removeClass("btn-info");
+      $("#btnAutoRefresh").addClass("btn-secondary");
+      clearRefreshInterval();
+    }
+  }
+
   $("#btnRefresh").on("click", () => {
     loadInfo();
+    clearRefreshInterval();
+    setRefreshInterval();
+  });
+
+  $("#btnAutoRefresh").button("toggle");
+  $("#btnAutoRefresh").on("click", () => {
+    const isPressed = ($("#btnAutoRefresh").attr("aria-pressed") == "true");
+    console.log("btnAutoRefresh toggled: " + isPressed);
+    switchAutoRefresh(isPressed);
   });
 
   loadInfo();
+  setRefreshInterval();
 });
 </script>
 </body>
