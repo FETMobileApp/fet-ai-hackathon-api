@@ -46,11 +46,11 @@
 
 <script>
 $(function() {
+  const CD_NUM = 10 // Countdown Num
   let isAutoRefresh = true;
   let refreshInterval = null;
   let countdownInterval = null;
-
-  let countdownNum = 10;
+  let countdown = CD_NUM;
 
   const setRrediction = (prediction) =>{
     $("#prediction").text(`Rrediction: ${prediction}%`);
@@ -85,30 +85,39 @@ $(function() {
   }
 
   const doCountdown = () => {
-    if (countdownNum > 0) {
-      countdownNum--;
+    if (countdown > 0) {
+      countdown--;
     }
-    console.log("countdown:" + countdownNum);
-    $("#countdown").text(countdownNum + "sec.");
+    console.log("countdown:" + countdown);
+    $("#countdown").text(countdown + "sec.");
+  }
+
+  const setCountdownInterval = () => {
+    countdownInterval = setInterval(() => {
+      doCountdown();
+    }, 1000); // 1sec.
+    countdown = CD_NUM;
+    $("#countdown").text(countdown + "sec.");
+  }
+
+  const clearCountdownInterval = () => {
+    clearInterval(countdownInterval);
+    $("#countdown").text("N/A");
   }
 
   const setRefreshInterval = () => {
     refreshInterval = setInterval(() => {
       console.log("Refresh result date.");
+      clearCountdownInterval();
       loadInfo();
-      countdownNum = 10;
+      setCountdownInterval();
     }, 10000); // 10 sec.
-    countdownInterval = setInterval(() => {
-      doCountdown();
-    }, 1000); // 1sec.
-    countdownNum = 10;
-    $("#countdown").text(countdownNum + "sec.");
+    setCountdownInterval();
   }
 
   const clearRefreshInterval = () => {
+    clearCountdownInterval();
     clearInterval(refreshInterval);
-    clearInterval(countdownInterval);
-    $("#countdown").text("N/A");
   }
 
   const switchAutoRefresh = (needAutoRefresh) => {
