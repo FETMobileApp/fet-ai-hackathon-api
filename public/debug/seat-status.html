@@ -86,22 +86,22 @@ $(function() {
 
   const doCountdown = () => {
     if (countdownNum > 0) {
-      console.log("countdown:" + countdownNum);
-      $("#countdown").text(countdownNum + "sec.");
       countdownNum--;
     }
+    console.log("countdown:" + countdownNum);
+    $("#countdown").text(countdownNum + "sec.");
   }
 
   const setRefreshInterval = () => {
     refreshInterval = setInterval(() => {
       console.log("Refresh result date.");
       loadInfo();
-      countdownNum = 10;
-      $("#countdown").text(countdownNum + "sec.");
     }, 10000); // 10 sec.
     countdownInterval = setInterval(() => {
       doCountdown();
     }, 1000); // 1sec.
+    countdownNum = 10;
+    $("#countdown").text(countdownNum + "sec.");
   }
 
   const clearRefreshInterval = () => {
