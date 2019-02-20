@@ -23,6 +23,18 @@
       height: 75vh;
       overflow: scroll;
     }
+
+    #btnAutoRefreshSpan {
+      width: 1.5em;
+      text-align: center;
+      display: inline-block;
+    }
+
+    #countdown {
+      width: 3em;
+      text-align: right;
+      display: inline-block;
+    }
   </style>
 </head>
 <body>
@@ -32,8 +44,14 @@
   </div>
   <div class="row">
     <button id="btnRefresh" class="btn btn-warning">Refresh</button>
-    <button id="btnAutoRefresh" class="btn btn-info active" data-toggle="button" aria-pressed="true" autocomplete="off">Auto-Refresh: On</button>
-    <button class="btn btn-secondary" disabled>Refresh after <span id="countdown">10sec.</span></button>
+    <button id="btnAutoRefresh" class="btn btn-info active" data-toggle="button" aria-pressed="true" autocomplete="off">
+      Auto-Refresh:
+      <span id="btnAutoRefreshSpan">On</span>
+    </button>
+    <button class="btn btn-secondary" disabled>
+      Refresh after
+      <span id="countdown">10</span>sec.
+    </button>
   </div>
   <div id="prediction" class="row alert alert-primary" role="alert">Prediction: 0%</div>
   <div class="row">
@@ -84,12 +102,16 @@ $(function() {
     getImage();
   }
 
+  const displayCountdownSec = (sec) => {
+    $("#countdown").html(sec);
+  }
+
   const doCountdown = () => {
     if (countdown > 0) {
       countdown--;
     }
     console.log("countdown:" + countdown);
-    $("#countdown").text(countdown + "sec.");
+    displayCountdownSec(countdown);
   }
 
   const setCountdownInterval = () => {
@@ -97,12 +119,12 @@ $(function() {
       doCountdown();
     }, 1000); // 1sec.
     countdown = CD_NUM;
-    $("#countdown").text(countdown + "sec.");
+    displayCountdownSec(countdown);
   }
 
   const clearCountdownInterval = () => {
     clearInterval(countdownInterval);
-    $("#countdown").text("N/A");
+    displayCountdownSec("&infin;");
   }
 
   const setRefreshInterval = () => {
@@ -123,12 +145,12 @@ $(function() {
   const switchAutoRefresh = (needAutoRefresh) => {
     isAutoRefresh = needAutoRefresh;
     if (isAutoRefresh) {
-      $("#btnAutoRefresh").text("Auto-Refresh: On");
+      $("#btnAutoRefreshSpan").text("On");
       $("#btnAutoRefresh").removeClass("btn-secondary");
       $("#btnAutoRefresh").addClass("btn-info");
       setRefreshInterval();
     } else {
-      $("#btnAutoRefresh").text("Auto-Refresh: Off");
+      $("#btnAutoRefreshSpan").text("Off");
       $("#btnAutoRefresh").removeClass("btn-info");
       $("#btnAutoRefresh").addClass("btn-secondary");
       clearRefreshInterval();
