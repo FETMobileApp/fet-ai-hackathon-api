@@ -96,6 +96,7 @@ $(function() {
     refreshInterval = setInterval(() => {
       console.log("Refresh result date.");
       loadInfo();
+      countdownNum = 10;
     }, 10000); // 10 sec.
     countdownInterval = setInterval(() => {
       doCountdown();
