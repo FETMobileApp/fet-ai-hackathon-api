@@ -110,7 +110,7 @@ const calculateProbabilityForPredictionResult = function(result) {
     const lowCPriObjs = [];
 
     for (const po of result.predictions) {
-        if (po.probability < 0.7) {
+        if (po.probability < 0.6) {
             continue;
         }
         if (excludeObjList.includes(po.tagName)) {
@@ -124,7 +124,7 @@ const calculateProbabilityForPredictionResult = function(result) {
         } else if (pri08ObjList.includes(po.tagName)) {
             lowCPriObjs.push(po.probability * 0.8);
         } else {
-            lowCPriObjs.push(po.probability * 0.2);
+            lowCPriObjs.push(po.probability * 0.4);
         }
     }
 
