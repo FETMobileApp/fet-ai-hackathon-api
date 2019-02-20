@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>[DEBUG] Upload Image - FET AI Hackathon[Hot Desking]</title>
+  <title>[DEBUG] Seat Status - FET AI Hackathon[Hot Desking]</title>
   <!-- bootstrap -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT" crossorigin="anonymous"></script>
@@ -17,58 +17,71 @@
 
   <!-- JavaScript code prettifier -->
   <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=sons-of-obsidian"></script>
+
+  <style>
+    #resultContainer {
+      height: 75vh;
+      overflow: scroll;
+    }
+  </style>
 </head>
 <body>
 <div class="container">
-<h1>[DEBUG] Upload Image</h1>
-<form id="uploadForm" method="POST" action="/api/upload-img" enctype="multipart/form-data">
-  <div class="form-group row">
-    <div class="custom-file">
-      <input type="file" class="custom-file-input" id="inputImg" name="img" accept="image/*" required>
-      <label class="custom-file-label" for="inputImg">Upload Image</label>
+  <div class="row">
+    <h1>[DEBUG] Seat Status</h1>
+  </div>
+  <div class="row">
+    <button id="btnRefresh" class="btn btn-warning">Refresh</button>
+  </div>
+  <div id="prediction" class="row alert alert-primary" role="alert">Rrediction: 0%</div>
+  <div class="row">
+    <div id="imageContainer" class="col-6">
+        <img src="/api/latest-img" width="100%">
     </div>
+    <div id="resultContainer" class="col-6"></div>
   </div>
-  <div class="form-group row btn-group" role="group" aria-label="Form buttons">
-    <input type="submit" class="btn btn-primary">
-    <input type="reset" class="btn btn-secondary">
-  </div>
-</form>
-<h2>Result:</h2>
-<div id="resultContainer"></div>
 </div>
 
 <script>
 $(function() {
-  bsCustomFileInput.init();
+  const setRrediction = (prediction) =>{
+    $("#prediction").text(`Rrediction: ${prediction}%`);
+  }
 
-  $("#uploadForm").submit(function() {
-    console.log("Form submit.");
-    event.preventDefault();
-    event.stopPropagation();
-
-    const form = $(this)[0];
-    const data = new FormData(form);
-    $.ajax({
-      url: form.action,
-      method: form.method,
-      data: data,
-      cache: false, 
-      processData: false,
-      contentType: false
-    })
+  const getResult = () => {
+    $.get("/api/seat-status")
     .done((data, textStatus, jqXHR) => {
       console.log(textStatus, data);
       const formattedJson = js_beautify(JSON.stringify(data));
-      $("#resultContainer").html($("<pre class=\"prettyprint\"><code></code></pre>").text(formattedJson));
+      $("#resultContainer").html($('<pre class="prettyprint"><code></code></pre>').text(formattedJson));
       PR.prettyPrint();
+
+      setRrediction(Math.round(data.prediction * 10000) / 100);
     })
     .fail((jqXHR, textStatus, errorThrown) => {
       console.log(textStatus, errorThrown);
       $("#resultContainer").html(errorThrown);
+      setRrediction("N/A");
     });
+  }
+
+  const getImage = () => {
+    const timestamp = (new Date()).getTime();
+    $("#imageContainer").html("");
+    $("#imageContainer").html(`<img src="/api/latest-img?t=${timestamp}" width="100%">`);
+  }
+
+  const loadInfo = () => {
+    getResult();
+    getImage();
+  }
+
+  $("#btnRefresh").on("click", () => {
+    loadInfo();
   });
+
+  loadInfo();
 });
 </script>
-
 </body>
 </html>
